@@ -177,7 +177,7 @@ class Filter
                         $case        = ResultIndex::UNCHANGED_QUERY;
                         $returnIndex = $resultProperty;
                         if (array_key_exists($reverseKey, $item)) {
-                            $case = ResultIndex::tryFrom($item[$reverseKey]['case']);
+                            $case = $item[$reverseKey]['case'];
                             if (array_key_exists('return_index', $item[$reverseKey])) {
                                 if (array_key_exists($item[$reverseKey]['return_index'], $this->attributeMap) && isset($result->{$this->attributeMap[$item[$reverseKey]['return_index']]})) {
                                     $returnIndex = $this->attributeMap[$item[$reverseKey]['return_index']];
@@ -187,7 +187,7 @@ class Filter
                             }
                             $add = true;
                         } elseif (array_key_exists('*', $item)) {
-                            $case = ResultIndex::tryFrom($item['*']['case']);
+                            $case = $item['*']['case'];
                             if (array_key_exists('return_index', $item['*'])) {
                                 if (array_key_exists($item['*']['return_index'], $this->attributeMap) && isset($result->{$this->attributeMap[$item['*']['return_index']]})) {
                                     $returnIndex = $this->attributeMap[$item['*']['return_index']];
