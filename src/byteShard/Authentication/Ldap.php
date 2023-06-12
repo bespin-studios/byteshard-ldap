@@ -113,8 +113,8 @@ class Ldap implements AuthenticationInterface
         if (isset($result->authenticated) && $result->authenticated === true) {
             $auth->setSuccess();
         } else {
-            if (isset($result->error_code)) {
-                switch ($result->error_code) {
+            if (isset($result->errorCode)) {
+                switch ($result->errorCode) {
                     case -1:
                         $auth->setAction(Enum\Action::AUTHENTICATION_TARGET_UNREACHABLE);
                         break;
@@ -125,8 +125,8 @@ class Ldap implements AuthenticationInterface
                         $auth->setAction(Enum\Action::PASSWORD_EXPIRED);
                         break;
                     default:
-                        Debug::error('Undefined Ldap Error Code: '.$result->error_code);
-                        $auth->setError((string)$result->error_code);
+                        Debug::error('Undefined Ldap Error Code: '.$result->errorCode);
+                        $auth->setError((string)$result->errorCode);
                         break;
                 }
             }
