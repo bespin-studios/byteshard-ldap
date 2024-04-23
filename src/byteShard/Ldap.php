@@ -397,7 +397,9 @@ class Ldap
                     $tmp              = clone $obj;
                     $lowerCaseRecords = array_change_key_case($records[$i]);
                     foreach ($attributeMapping as $recordAttribute => $resultProperty) {
-                        if (array_key_exists($recordAttribute, $lowerCaseRecords) && array_key_exists('count', $lowerCaseRecords[$recordAttribute])) {
+                        if (strtolower($recordAttribute) === 'dn' && array_key_exists('dn', $lowerCaseRecords) && !is_array($lowerCaseRecords['dn'])) {
+                            $tmp->dn = $lowerCaseRecords['dn'];
+                        } elseif (array_key_exists($recordAttribute, $lowerCaseRecords) && array_key_exists('count', $lowerCaseRecords[$recordAttribute])) {
                             if ($lowerCaseRecords[$recordAttribute]['count'] === 1) {
                                 if ($this->convertBinary === true && ($recordAttribute === 'objectguid' || $recordAttribute === 'objectsid')) {
                                     $tmp->{$resultProperty} = $this->guid_to_string($lowerCaseRecords[$recordAttribute][0]);
