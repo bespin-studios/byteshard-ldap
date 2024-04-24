@@ -134,9 +134,9 @@ class Ldap implements AuthenticationInterface
         }
     }
 
-    public function changePassword(Struct\Result $auth): Struct\Result
+    public function changePassword(string $username, string $newPassword, string|int|null $algorithm = null, ?int $cost = null, ?string $salt = null): ?int
     {
-        return $auth;
+        return null;
     }
 
     public function getUserID(string $username): ?int
