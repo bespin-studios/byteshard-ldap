@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/byteshard/ldap/compare/v1.0.2...v1.0.3) (2024-04-24)
+
+
+### Bug Fixes
+
+* dn can now be correctly queried ([ee97384](https://github.com/byteshard/ldap/commit/ee97384e1624685fbb7eb7cc31a24a64c7019d10))
+* use latest core version ([4ade4d1](https://github.com/byteshard/ldap/commit/4ade4d1320ed23d76d5cf8b8228e6b401e3eba4a))
+
 ## [1.0.2](https://github.com/byteshard/ldap/compare/v1.0.1...v1.0.2) (2023-06-12)
 
 
