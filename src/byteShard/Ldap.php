@@ -201,7 +201,7 @@ class Ldap
             $this->validate_host($host);
         }
 
-        $connection = isset($this->port) ? ldap_connect($protocol.$host, $this->port) : ldap_connect($protocol.$host);
+        $connection = ldap_connect($protocol.$host.':'.$this->port);
         if ($connection === false) {
             throw new Exception('Could not connect to Ldap Host', 100006012);
         }
@@ -320,7 +320,7 @@ class Ldap
      * @param Attributes|null $attributes
      * @return array
      */
-    public function getArray(Filter $filter, Attributes $attributes = null): array
+    public function getArray(Filter $filter, ?Attributes $attributes = null): array
     {
         $filters = $filter->getFilters();
         if ($attributes !== null) {
@@ -332,7 +332,7 @@ class Ldap
         return $filter->getResult();
     }
 
-    private function query(string $baseDn, string $searchFilter, Filter $filter, Attributes $attributes = null): void
+    private function query(string $baseDn, string $searchFilter, Filter $filter, ?Attributes $attributes = null): void
     {
         $searchAttributes = [];
         $attributeMapping = [];
@@ -536,15 +536,15 @@ class Ldap
             switch ($errorNumber) {
                 case 0:
                     if (stripos($errorMessage, 'getaddrinfo failed') !== false) {
-                        $e = new Exception('Ldap: Hostname could not be resolved: '.$this->host.(isset($this->port) ? ':'.$this->port : ''), 100006005);
+                        $e = new Exception('Ldap: Hostname could not be resolved: '.$this->host.':'.$this->port, 100006005);
                     } else {
-                        $e = new Exception('Ldap: Host unreachable: '.$this->host.(isset($this->port) ? ':'.$this->port : ''), 100006006);
+                        $e = new Exception('Ldap: Host unreachable: '.$this->host.':'.$this->port, 100006006);
                     }
                     $e->setLogChannel('byteShard');
                     $e->setLdapErrors($this->host, $this->port, $errorMessage);
                     break;
                 default:
-                    $e = new Exception('Ldap: Host unreachable: '.$this->host.(isset($this->port) ? ':'.$this->port : ''), 100006007);
+                    $e = new Exception('Ldap: Host unreachable: '.$this->host.':'.$this->port, 100006007);
                     $e->setLogChannel('byteShard');
                     $e->setLdapErrors($this->host, $this->port, $errorMessage);
                     break;

@@ -26,7 +26,7 @@ class Ldap implements AuthenticationInterface
     private int       $referrals;
     private int       $networkTimeout;
 
-    public function __construct(string $host = null, private int $port = 389, private readonly string $protocol = '')
+    public function __construct(?string $host = null, private int $port = 389, private readonly string $protocol = '')
     {
         if ($host !== null) {
             $this->host = $host;
