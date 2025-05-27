@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/bespin-studios/byteshard-ldap/compare/v1.0.3...v1.0.4) (2025-05-27)
+
+
+### Bug Fixes
+
+* pipeline and php 8.4 warnings ([b297ddb](https://github.com/bespin-studios/byteshard-ldap/commit/b297ddb036ed646e2e91f4b1b0452038cf64995b))
+
 ## [1.0.3](https://github.com/byteshard/ldap/compare/v1.0.2...v1.0.3) (2024-04-24)
 
 
