@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/bespin-studios/byteshard-ldap/compare/v1.0.4...v1.0.5) (2025-05-28)
+
+
+### Bug Fixes
+
+* ldap_connect requires a valid scheme ([dbfdcaf](https://github.com/bespin-studios/byteshard-ldap/commit/dbfdcafc37e112fe34e45e51bd1631be3215b554))
+
 ## [1.0.4](https://github.com/bespin-studios/byteshard-ldap/compare/v1.0.3...v1.0.4) (2025-05-27)
 
 
