@@ -44,11 +44,11 @@ class Ldap
     private bool       $useStartTLS         = false;
     private bool       $ignoreTLSCert       = false;
 
-    public function __construct(string $host, int $port = 389, string $protocol = '')
+    public function __construct(string $host, int $port = 389, string $protocol = 'ldap')
     {
         $this->host     = $host;
         $this->port     = $port;
-        $this->protocol = $protocol;
+        $this->protocol = preg_replace('/[^a-z]/', '', strtolower($protocol));;
     }
 
     public function setHost(string $host): self
@@ -187,21 +187,24 @@ class Ldap
         $result->error         = false;
         $result->authenticated = false;
 
-        $protocol = $this->protocol;
-        $host     = $this->host;
-        if (str_contains($this->host, '://')) {
-            $host = substr($this->host, strpos($this->host, '://') + 3);
+        $parsedUri = parse_url(rtrim($this->host, '/'));
+        if (!isset($parsedUri['scheme'])) {
+            $parsedUri['scheme'] = $this->protocol;
         }
+        if (!isset($parsedUri['port'])) {
+            $parsedUri['port'] = $this->port;
+        }
+        $uri = $parsedUri['scheme'].'://'.$parsedUri['host'].':'.$parsedUri['port'];
 
         /** @noinspection PhpUndefinedConstantInspection */
         if (defined('DEBUG') && DEBUG === true && defined('DEBUG_LEVEL') && is_int(DEBUG_LEVEL) && DEBUG_LEVEL > 1) {
             /** @noinspection PhpUndefinedConstantInspection */
             ldap_set_option(null, LDAP_OPT_DEBUG_LEVEL, DEBUG_LEVEL);
-            //Try to open a socket to validate if server:port is reachable
-            $this->validate_host($host);
+            //Try to open a socket to validate if the server:port is reachable
+            Ldap::validateHost($parsedUri['host'], $parsedUri['port']);
         }
 
-        $connection = ldap_connect($protocol.$host.':'.$this->port);
+        $connection = ldap_connect($uri);
         if ($connection === false) {
             throw new Exception('Could not connect to Ldap Host', 100006012);
         }
@@ -216,13 +219,14 @@ class Ldap
             } elseif (ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, Protocol::V2->value)) {
                 $this->usedProtocolVersion = Protocol::V2;
             } else {
-                $e = new Exception('Ldap: no valid protocol version found for host "'.$host.'"', 100006002);
+                $e = new Exception('Ldap: no valid protocol version found for host "'.$parsedUri['host'].'"', 100006002);
                 $e->setLogChannel('byteShard');
                 throw $e;
             }
         }
 
-        if ($this->useStartTLS === true) {
+        // StartTLS and LDAPS are mutually exclusive
+        if ($this->useStartTLS === true && $parsedUri['scheme'] !== 'ldaps') {
             ldap_start_tls($this->connection);
         }
 
@@ -267,7 +271,7 @@ class Ldap
                 $this->bound           = true;
                 $this->boundUser       = $credentials->getUsername();
             } else {
-                $result->error      = true;
+                $result->error     = true;
                 $result->errorCode = $this->eval_ldap_error($credentials->getUsername(), $result);
             }
         }
@@ -523,32 +527,31 @@ class Ldap
     }
 
     /**
-     * Try to open a socket to validate if host:port is reachable
+     * Try to open a socket to validate if the host:port is reachable
      * ldap connect does not provide good error messages in case the connection fails
      *
      * @param string $host
+     * @param int $port
      * @throws Exception
      */
-    private function validate_host(string $host): void
+    private static function validateHost(string $host, int $port): void
     {
-        $sock = fsockopen($host, $this->port, $errorNumber, $errorMessage, 1);
+        $sock = fsockopen($host, $port, $errorNumber, $errorMessage, 1);
         if (!$sock) {
             switch ($errorNumber) {
                 case 0:
                     if (stripos($errorMessage, 'getaddrinfo failed') !== false) {
-                        $e = new Exception('Ldap: Hostname could not be resolved: '.$this->host.':'.$this->port, 100006005);
+                        $e = new Exception('Ldap: Hostname could not be resolved: '.$host.':'.$port, 100006005);
                     } else {
-                        $e = new Exception('Ldap: Host unreachable: '.$this->host.':'.$this->port, 100006006);
+                        $e = new Exception('Ldap: Host unreachable: '.$host.':'.$port, 100006006);
                     }
-                    $e->setLogChannel('byteShard');
-                    $e->setLdapErrors($this->host, $this->port, $errorMessage);
                     break;
                 default:
-                    $e = new Exception('Ldap: Host unreachable: '.$this->host.':'.$this->port, 100006007);
-                    $e->setLogChannel('byteShard');
-                    $e->setLdapErrors($this->host, $this->port, $errorMessage);
+                    $e = new Exception('Ldap: Host unreachable: '.$host.':'.$port, 100006007);
                     break;
             }
+            $e->setLogChannel('byteShard');
+            $e->setLdapErrors($host, $port, $errorMessage);
             throw $e;
         }
         fclose($sock);
