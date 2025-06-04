@@ -6,21 +6,23 @@
 
 namespace byteShard\Ldap;
 
+use byteShard\Ldap\Enum\ResultObject;
+
 /**
  * Class Attribute
  * @package byteShard\Ldap
  */
 class Attribute
 {
-    private string $search;
-    private string $result;
+    private string              $search;
+    private string|ResultObject $result;
 
     /**
      * Attribute constructor.
      * @param string $searchAttribute the ldap attribute to include in the result
-     * @param ?string $resultObjectProperty
+     * @param string|ResultObject|null $resultObjectProperty
      */
-    public function __construct(string $searchAttribute, ?string $resultObjectProperty = null)
+    public function __construct(string $searchAttribute, null|string|ResultObject $resultObjectProperty = null)
     {
         $this->search = $searchAttribute;
         $this->result = $resultObjectProperty !== null ? $resultObjectProperty : $searchAttribute;
@@ -41,6 +43,9 @@ class Attribute
      */
     public function getResultAttribute(): string
     {
+        if ($this->result instanceof ResultObject) {
+            return $this->result->value;
+        }
         return $this->result;
     }
 }
