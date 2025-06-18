@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/bespin-studios/byteshard-ldap/compare/v1.0.5...v1.1.0) (2025-06-18)
+
+
+### Features
+
+* add typed parameters for a ldap attribute ([77b4c48](https://github.com/bespin-studios/byteshard-ldap/commit/77b4c48b47ffa6d37cd6dc2f0ea6f7a6132af7fc))
+
 ## [1.0.5](https://github.com/bespin-studios/byteshard-ldap/compare/v1.0.4...v1.0.5) (2025-05-28)
 
 
